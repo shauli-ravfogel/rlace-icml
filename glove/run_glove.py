@@ -3,7 +3,7 @@ import os
 
 sys.path.append("..")
 sys.path.append("../")
-
+import debias
 from debias import get_debiasing_projection, get_rowspace_projection
 
 from sklearn.decomposition import PCA
