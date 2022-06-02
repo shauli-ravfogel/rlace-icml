@@ -220,10 +220,10 @@ for i in pbar:
             if adv:
                 torch.save(adv_clf.state_dict(), "{}/adv_{}.pt".format(path, args.run_id))
 
-            wandb.log({"train_loss": train_loss, "dev_loss": dev_loss, "best_score": best_score, "dev_acc": dev_acc, "adv_acc": adv_acc if adv else -1})
-            pbar.set_description("Train loss: {:.3f}; Dev loss: {:.3f}; Best Dev loss: {:.3f}; Dev acc: {:.3f}; Dev adv-acc: {:.3f}".format(train_loss, dev_loss, best_score, dev_acc, adv_acc if adv else -1))
-            pbar.refresh() # to show immediately the update
-            time.sleep(0.01)
+        wandb.log({"train_loss": train_loss, "dev_loss": dev_loss, "best_score": best_score, "dev_acc": dev_acc, "adv_acc": adv_acc if adv else -1})
+        pbar.set_description("Train loss: {:.3f}; Dev loss: {:.3f}; Best Dev loss: {:.3f}; Dev acc: {:.3f}; Dev adv-acc: {:.3f}".format(train_loss, dev_loss, best_score, dev_acc, adv_acc if adv else -1))
+        pbar.refresh() # to show immediately the update
+        time.sleep(0.01)
             
         #print(i, train_loss, dev_loss, best_score)
         loss_vals = []
