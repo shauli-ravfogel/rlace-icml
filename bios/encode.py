@@ -102,10 +102,10 @@ if __name__ == "__main__":
                 
                 if finetuning_type == "adv":
                     print("Loading adv")
-                    bert_params =  torch.load("models/linear-adv/bert_{}_adv.pt".format(rand_seed))
+                    bert_params =  torch.load("models/linear-adv/bert_{}.pt".format(rand_seed))
                 elif finetuning_type == "mlp_adv":
                     print("Loading MLP adv")
-                    bert_params =  torch.load("models/mlp-adv/bert_{}_adv.pt".format(rand_seed))
+                    bert_params =  torch.load("models/mlp-adv/bert_{}.pt".format(rand_seed))
                 else:
                     bert_params =  torch.load("models/no-adv/bert_{}.pt".format(rand_seed))
                     
