@@ -119,7 +119,6 @@ else:
         optimizer = torch.optim.Adam(list(bert.parameters()) + list(W.parameters()), lr = 1e-4)
     else:
         optimizer = torch.optim.Adam(list(bert.parameters())+ list(W.parameters()) +  list(adv_clf.parameters()), lr = 1e-4)
-wandb.config.update({"lr": lr, "momentum": momentum, "decay": decay})
 
 W.to(device)
 bert.to(device)
@@ -184,6 +183,7 @@ pbar = tqdm.tqdm(range(args.iters), ascii=True)
 args = argparse.Namespace()
 d = vars(args)
 run = wandb.init(reinit=True, project="rlace-finetune-bios", config=d)
+wandb.config.update({"lr": lr, "momentum": momentum, "decay": decay})
 
 
 for i in pbar:
