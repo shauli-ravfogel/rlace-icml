@@ -16,4 +16,4 @@ python3 finetune.py --run_id 2 --device 0 --adv 1 --mlp_adv 1 --opt sgd &
 python3 finetune.py --run_id 3 --device 1 --adv 1 --mlp_adv 1 --opt sgd &
 python3 finetune.py --run_id 4 --device 2 --adv 1 --mlp_adv 1 --opt sgd
 
-python3 encode.py
+python3 encode.py --device 0
