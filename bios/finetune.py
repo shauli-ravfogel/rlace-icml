@@ -90,7 +90,7 @@ np.random.seed(args.run_id)
 torch.manual_seed(args.run_id)
 
 X,y_gender,txts,professions = X[:], y_gender[:], txts[:], professions[:]
-X_dev,y_dev_gender,txts_dev,professions_dev = X_dev[:N],y_dev_gender[:N],txts_dev[:N],professions_dev[:N]
+X_dev,y_dev_gender,txts_dev,professions_dev = X_dev[:],y_dev_gender[:],txts_dev[:],professions_dev[:]
 
 tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
 bert = BertModel.from_pretrained("bert-base-uncased")
