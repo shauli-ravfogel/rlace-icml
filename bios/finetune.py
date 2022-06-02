@@ -182,7 +182,7 @@ def eval_dev(bert, W, texts_dev, y_dev, device, adv=None, y_dev_gender=None):
 pbar = tqdm.tqdm(range(args.iters), ascii=True)
 d, d2 = args.__dict__, {"lr": lr, "momentum": momentum, "decay": decay}
 new_d = {**d, **d2}
-run = wandb.init(reinit=True, project="rlace-finetune-bios", config=new_d)
+run = wandb.init(reinit=True, project="rlace-finetune-bios", config=new_d, tags=["no-adv" if args.adv==0 else "mlp-adv" if args.mlp_adv else "linear-adv"])
 
 
 for i in pbar:
