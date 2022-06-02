@@ -52,7 +52,7 @@ def load_bios(group, finetune_mode, seed=None):
     if finetune_mode not in ["no-adv", "mlp-adv", "linear-adv"]:
         X = np.load("bios_data/{}_cls.npy".format(group))
     else:
-        X = np.load("models/{}/{}_{}_cls.npy".format(finetune_mode, group, seed))
+        X = np.load("encodings/{}/{}_{}_cls.npy".format(finetune_mode, group, seed))
     with open("bios_data/{}.pickle".format(group), "rb") as f:
         bios_data = pickle.load(f)
         Y = np.array([1 if d["g"] == "f" else 0 for d in bios_data])
