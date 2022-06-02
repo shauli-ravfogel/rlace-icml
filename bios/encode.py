@@ -17,7 +17,7 @@ from transformers import BertModel, BertTokenizer
 
 def load_bios(group):
 
-    with open("../../../{}.pickle".format(group), "rb") as f:
+    with open("bios_data/{}.pickle".format(group), "rb") as f:
         bios_data = pickle.load(f)
         txts = [d["hard_text_untokenized"] for d in bios_data]
         

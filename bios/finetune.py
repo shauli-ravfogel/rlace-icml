@@ -1,7 +1,6 @@
 import sys
 import os
 
-from classifier import CovMaximizer
 from sklearn.linear_model import SGDClassifier, LinearRegression, Lasso, Ridge
 from sklearn.utils import shuffle
 from sklearn.decomposition import PCA
@@ -18,7 +17,6 @@ from sklearn.cross_decomposition import PLSRegression
 from sklearn.decomposition import TruncatedSVD
 import torch
 from sklearn.linear_model import SGDClassifier
-from relaxed_inlp import solve_fantope_relaxation,solve_fantope_relaxation_fr
 
 from sklearn.svm import LinearSVC
 from pytorch_revgrad import RevGrad
@@ -30,8 +28,6 @@ import pickle
 import matplotlib.pyplot as plt
 from sklearn import cluster
 from sklearn import neural_network
-from gensim.models.keyedvectors import Word2VecKeyedVectors
-from gensim.models import KeyedVectors
 import numpy as np
 from transformers import BertModel, BertTokenizer
 import argparse
