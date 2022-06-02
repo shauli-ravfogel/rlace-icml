@@ -1,7 +1,5 @@
 import sys
 import os
-sys.path.append("../../..")
-from debias import get_debiasing_projection, get_rowspace_projection
 
 from classifier import CovMaximizer
 from sklearn.linear_model import SGDClassifier, LinearRegression, Lasso, Ridge
@@ -41,8 +39,8 @@ import time
 
 def load_bios(group):
 
-    X = np.load("../../../{}_cls.npy".format(group))
-    with open("../../../{}.pickle".format(group), "rb") as f:
+    X = np.load("bios_data/{}_cls.npy".format(group))
+    with open("bios_data/{}.pickle".format(group), "rb") as f:
         bios_data = pickle.load(f)
         Y = np.array([1 if d["g"]=="f" else 0 for d in bios_data])
         professions = np.array([d["p"] for d in bios_data])
@@ -70,6 +68,14 @@ parser.add_argument('--opt', type=str, default="sgd", required=False)
 args = parser.parse_args()
 print(args)
 
+if not os.path.exists("models"):
+    os.makedirs("models")
+if not os.path.exists("models/mlp-adv"):
+    os.makedirs("models/mlp-adv")
+if not os.path.exists("models/linear-adv"):
+    os.makedirs("models/linear-adv")
+if not os.path.exists("models/no-adv"):
+    os.makedirs("models/no-adv")
 
 adv = args.adv == 1
 device="cuda:{}".format(args.run_id % 4) if args.device == -1 else "cuda:{}".format(args.device)
@@ -101,14 +107,14 @@ loss_fn = torch.nn.CrossEntropyLoss()
 
 if args.opt == "sgd":
     if not adv:
-        optimizer = torch.optim.SGD(list(bert.parameters())+list(adv_clf.parameters()), lr = 0.5*1e-3, momentum=0.9, weight_decay=1e-6)
+        optimizer = torch.optim.SGD(list(bert.parameters()), lr = 0.5*1e-3, momentum=0.9, weight_decay=1e-6)
     else:
-        optimizer = torch.optim.SGD(list(bert.parameters())+list(adv_clf.parameters()) + list(adv_clf.parameters()), lr = 0.5*1e-3, momentum=0.9, weight_decay = 1e-6)
+        optimizer = torch.optim.SGD(list(bert.parameters())+list(adv_clf.parameters()), lr = 0.5*1e-3, momentum=0.9, weight_decay = 1e-6)
 else:
     if not adv:
-        optimizer = torch.optim.Adam(list(bert.parameters())+list(adv_clf.parameters()), lr = 1e-4)
+        optimizer = torch.optim.Adam(list(bert.parameters()), lr = 1e-4)
     else:
-        optimizer = torch.optim.Adam(list(bert.parameters())+list(adv_clf.parameters()) + list(adv_clf.parameters()), lr = 1e-4)
+        optimizer = torch.optim.Adam(list(bert.parameters())+ list(adv_clf.parameters()), lr = 1e-4)
         
 W.to(device)
 bert.to(device)
@@ -207,9 +213,9 @@ for i in pbar:
         if dev_loss < best_score:
             best_score = dev_loss.copy()
             
-            path = "models/adv-mlp" if args.mlp_adv else "models"
-            torch.save(W.state_dict(), ("{}/W_{}.pt" if not adv else "{}/W_{}_adv.pt").format(path,args.run_id))
-            torch.save(bert.state_dict(), ("{}/bert_{}.pt" if not adv else "{}/bert_{}_adv.pt").format(path,args.run_id))
+            path = "models/adv-mlp" if args.mlp_adv else "models/linear-adv" if args.adv else "models/no-adv"
+            torch.save(W.state_dict(), "{}/W_{}.pt".format(path,args.run_id))
+            torch.save(bert.state_dict(), "{}/bert_{}.pt".format(path,args.run_id))
             if adv:
                 torch.save(adv_clf.state_dict(), "{}/adv_{}.pt".format(path, args.run_id))
             
