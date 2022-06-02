@@ -68,9 +68,6 @@ parser.add_argument('--iters', type=int, default=16000, required=False)
 
 args = parser.parse_args()
 print(args)
-args = argparse.Namespace()
-d = vars(args)
-run = wandb.init(reinit=True, project="rlace-finetune-bios", config=d)
 
 if not os.path.exists("models"):
     os.makedirs("models")
@@ -183,9 +180,10 @@ def eval_dev(bert, W, texts_dev, y_dev, device, adv=None, y_dev_gender=None):
     return return_dict
 
 
-N_ITERS = args.iters
-pbar = tqdm.tqdm(range(N_ITERS), ascii=True)
-
+pbar = tqdm.tqdm(range(args.iters), ascii=True)
+args = argparse.Namespace()
+d = vars(args)
+run = wandb.init(reinit=True, project="rlace-finetune-bios", config=d)
 
 
 for i in pbar:
