@@ -219,7 +219,7 @@ for i in pbar:
         if dev_loss < best_score:
             best_score = dev_loss.copy()
             
-            path = "models/adv-mlp" if args.mlp_adv else "models/linear-adv" if args.adv else "models/no-adv"
+            path = "models/mlp-adv" if args.mlp_adv else "models/linear-adv" if args.adv else "models/no-adv"
             torch.save(W.state_dict(), "{}/W_{}.pt".format(path,args.run_id))
             torch.save(bert.state_dict(), "{}/bert_{}.pt".format(path,args.run_id))
             if adv:
