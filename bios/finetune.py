@@ -62,7 +62,7 @@ parser.add_argument('--mlp_adv', type=int, default=0)
 parser.add_argument('--run_id', type=int, default=0)
 parser.add_argument('--device', type=int, default=-1, required=False)
 parser.add_argument('--opt', type=str, default="sgd", required=False)
-parser.add_argument('--iters', type=int, default=16000, required=False)
+parser.add_argument('--iters', type=int, default=30000, required=False)
 
 
 
