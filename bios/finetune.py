@@ -103,14 +103,14 @@ loss_fn = torch.nn.CrossEntropyLoss()
 
 if args.opt == "sgd":
     if not adv:
-        optimizer = torch.optim.SGD(list(bert.parameters()), lr = 0.5*1e-3, momentum=0.9, weight_decay=1e-6)
+        optimizer = torch.optim.SGD(list(bert.parameters()) + list(W.parameters(())), lr = 0.5*1e-3, momentum=0.9, weight_decay=1e-6)
     else:
-        optimizer = torch.optim.SGD(list(bert.parameters())+list(adv_clf.parameters()), lr = 0.5*1e-3, momentum=0.9, weight_decay = 1e-6)
+        optimizer = torch.optim.SGD(list(bert.parameters())+ list(W.parameters()) +  list(adv_clf.parameters()), lr = 0.5*1e-3, momentum=0.9, weight_decay = 1e-6)
 else:
     if not adv:
-        optimizer = torch.optim.Adam(list(bert.parameters()), lr = 1e-4)
+        optimizer = torch.optim.Adam(list(bert.parameters()) + list(W.parameters()), lr = 1e-4)
     else:
-        optimizer = torch.optim.Adam(list(bert.parameters())+ list(adv_clf.parameters()), lr = 1e-4)
+        optimizer = torch.optim.Adam(list(bert.parameters())+ list(W.parameters()) +  list(adv_clf.parameters()), lr = 1e-4)
         
 W.to(device)
 bert.to(device)
