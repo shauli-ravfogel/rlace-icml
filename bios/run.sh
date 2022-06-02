@@ -1,0 +1,1 @@
+python3 finetune.py --run_id 0 --device 0 --adv 0 --opt sgd
