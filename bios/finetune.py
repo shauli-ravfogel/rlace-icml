@@ -68,6 +68,9 @@ parser.add_argument('--iters', type=int, default=16000, required=False)
 
 args = parser.parse_args()
 print(args)
+args = argparse.Namespace()
+d = vars(args)
+run = wandb.init(reinit=True, project="rlace-finetune-bios", config=d)
 
 if not os.path.exists("models"):
     os.makedirs("models")
@@ -108,15 +111,19 @@ loss_fn = torch.nn.CrossEntropyLoss()
 
 if args.opt == "sgd":
     if not adv:
-        optimizer = torch.optim.SGD(list(bert.parameters()) + list(W.parameters(())), lr = 0.5*1e-3, momentum=0.9, weight_decay=1e-6)
+        lr,momemntum,decay  =  0.5*1e-3, 0.9, 1e-6
+        optimizer = torch.optim.SGD(list(bert.parameters()) + list(W.parameters(())), lr = lr, momentum = momentum, weight_decay = decay)
     else:
-        optimizer = torch.optim.SGD(list(bert.parameters())+ list(W.parameters()) +  list(adv_clf.parameters()), lr = 0.5*1e-3, momentum=0.9, weight_decay = 1e-6)
+        lr, momentum, decay = 0.5*1e-3, 0.8, 1e-6
+        optimizer = torch.optim.SGD(list(bert.parameters())+ list(W.parameters()) +  list(adv_clf.parameters()), lr = lr, momentum = momentum, weight_decay = decay)
 else:
+    lr,momentum,decay = None, None, None
     if not adv:
         optimizer = torch.optim.Adam(list(bert.parameters()) + list(W.parameters()), lr = 1e-4)
     else:
         optimizer = torch.optim.Adam(list(bert.parameters())+ list(W.parameters()) +  list(adv_clf.parameters()), lr = 1e-4)
-        
+wandb.config.update({"lr": lr, "momentum": momentum, "decay": decay})
+
 W.to(device)
 bert.to(device)
 
@@ -179,9 +186,7 @@ def eval_dev(bert, W, texts_dev, y_dev, device, adv=None, y_dev_gender=None):
 N_ITERS = args.iters
 pbar = tqdm.tqdm(range(N_ITERS), ascii=True)
 
-args = argparse.Namespace()
-d = vars(args)
-run = wandb.init(reinit=True, project="rlace-finetune-bios", config=d)
+
 
 for i in pbar:
     
