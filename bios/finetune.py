@@ -59,10 +59,11 @@ parser = argparse.ArgumentParser(description="An argparse example")
 
 parser.add_argument('--adv', type=int, default=0)
 parser.add_argument('--mlp_adv', type=int, default=0)
-
 parser.add_argument('--run_id', type=int, default=0)
 parser.add_argument('--device', type=int, default=-1, required=False)
 parser.add_argument('--opt', type=str, default="sgd", required=False)
+parser.add_argument('--iters', type=int, default=16000, required=False)
+
 
 
 args = parser.parse_args()
@@ -175,10 +176,12 @@ def eval_dev(bert, W, texts_dev, y_dev, device, adv=None, y_dev_gender=None):
     return return_dict
 
 
-N_ITERS = 70000
+N_ITERS = args.iters
 pbar = tqdm.tqdm(range(N_ITERS), ascii=True)
 
-run = wandb.init(reinit=True, project="rlace-finetune-bios")
+args = argparse.Namespace()
+d = vars(args)
+run = wandb.init(reinit=True, project="rlace-finetune-bios", config=d)
 
 for i in pbar:
     
@@ -205,7 +208,7 @@ for i in pbar:
     
     loss_vals.append(loss.detach().cpu().numpy().item())
     
-    if i % 2000 == 0: #and i > 0:
+    if i % 1000 == 0: #and i > 0:
         return_dict = eval_dev(bert, W, txts_dev, y_dev_prof, device, adv=adv_clf if adv else None, y_dev_gender=y_dev_gender)
         dev_loss, dev_acc = return_dict["loss"], return_dict["acc"]
         if adv:
@@ -221,9 +224,9 @@ for i in pbar:
                 torch.save(adv_clf.state_dict(), "{}/adv_{}.pt".format(path, args.run_id))
 
         wandb.log({"train_loss": train_loss, "dev_loss": dev_loss, "best_score": best_score, "dev_acc": dev_acc, "adv_acc": adv_acc if adv else -1})
-        pbar.set_description("Train loss: {:.3f}; Dev loss: {:.3f}; Best Dev loss: {:.3f}; Dev acc: {:.3f}; Dev adv-acc: {:.3f}".format(train_loss, dev_loss, best_score, dev_acc, adv_acc if adv else -1))
-        pbar.refresh() # to show immediately the update
-        time.sleep(0.01)
+        #pbar.set_description("Train loss: {:.3f}; Dev loss: {:.3f}; Best Dev loss: {:.3f}; Dev acc: {:.3f}; Dev adv-acc: {:.3f}".format(train_loss, dev_loss, best_score, dev_acc, adv_acc if adv else -1))
+        #pbar.refresh() # to show immediately the update
+        #time.sleep(0.01)
             
         #print(i, train_loss, dev_loss, best_score)
         loss_vals = []
