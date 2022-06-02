@@ -83,9 +83,18 @@ if __name__ == "__main__":
     bert.to(device)
     bert.eval()
     rand_seed = args.run_id
-    
-    for finetuning_type in ["mlp_adv"]: #["adv", "mlp_adv", "not-adv"]:
-        #for rand_seed in range(5):
+
+    if not os.path.exists("encodings"):
+        os.makedirs("encodings")
+    if not os.path.exists("encodings/mlp-adv"):
+        os.makedirs("encodings/mlp-adv")
+    if not os.path.exists("encodings/linear-adv"):
+        os.makedirs("encodings/linear-adv")
+    if not os.path.exists("encodings/no-adv"):
+        os.makedirs("encodings/no-adv")
+
+    for finetuning_type in ["adv", "mlp_adv", "not-adv"]:
+        for rand_seed in range(5):
             for mode in ["train", "dev", "test"]:
         
                 txts =  load_bios(mode)
@@ -93,14 +102,14 @@ if __name__ == "__main__":
                 
                 if finetuning_type == "adv":
                     print("Loading adv")
-                    bert_params =  torch.load("models/bert_{}_adv.pt".format(rand_seed))
+                    bert_params =  torch.load("models/linear-adv/bert_{}_adv.pt".format(rand_seed))
                 elif finetuning_type == "mlp_adv":
                     print("Loading MLP adv")
-                    bert_params =  torch.load("models/adv-mlp/bert_{}_adv.pt".format(rand_seed))
+                    bert_params =  torch.load("models/mlp-adv/bert_{}_adv.pt".format(rand_seed))
                 else:
-                    bert_params =  torch.load("models/bert_{}.pt".format(rand_seed))
+                    bert_params =  torch.load("models/no-adv/bert_{}.pt".format(rand_seed))
                     
                 bert.load_state_dict(bert_params)
                 H = encode(bert, txts)
-                path = "encodings/adv/{}_{}_cls.npy".format(mode,rand_seed) if finetuning_type == "adv" else "encodings/adv-mlp/{}_{}_cls.npy".format(mode,rand_seed) if finetuning_type == "mlp_adv" else "encodings/regular/{}_{}_cls.npy".format(mode,rand_seed)
+                path = "encodings/linear-adv/{}_{}_cls.npy".format(mode,rand_seed) if finetuning_type == "adv" else "encodings/mlp-adv/{}_{}_cls.npy".format(mode,rand_seed) if finetuning_type == "mlp_adv" else "encodings/no-adv/{}_{}_cls.npy".format(mode,rand_seed)
                 np.save(path, H)
