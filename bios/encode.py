@@ -93,7 +93,7 @@ if __name__ == "__main__":
     if not os.path.exists("encodings/no-adv"):
         os.makedirs("encodings/no-adv")
 
-    for finetuning_type in ["adv", "mlp_adv", "not-adv"]:
+    for finetuning_type in ["not-adv"]: #["adv", "mlp_adv", "not-adv"]:
         for rand_seed in range(5):
             for mode in ["train", "dev", "test"]:
         
