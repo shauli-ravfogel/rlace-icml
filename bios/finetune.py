@@ -84,7 +84,9 @@ device="cuda:{}".format(args.run_id % 4) if args.device == -1 else "cuda:{}".for
 X,y_gender,txts,professions,bios_data =  load_bios("train")
 X_dev,y_dev_gender,txts_dev,professions_dev,bios_data_dev =  load_bios("dev")
 
-N = 50000 # doesn't have impact
+
+random.seed(args.run_id)
+np.random.seed(args.run_id)
 X,y_gender,txts,professions = X[:], y_gender[:], txts[:], professions[:]
 X_dev,y_dev_gender,txts_dev,professions_dev = X_dev[:N],y_dev_gender[:N],txts_dev[:N],professions_dev[:N]
 
