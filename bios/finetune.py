@@ -108,7 +108,7 @@ loss_fn = torch.nn.CrossEntropyLoss()
 
 if args.opt == "sgd":
     if not adv:
-        lr,momemntum,decay  =  0.5*1e-3, 0.9, 1e-6
+        lr,momentum,decay  =  0.5*1e-3, 0.9, 1e-6
         optimizer = torch.optim.SGD(list(bert.parameters()) + list(W.parameters(())), lr = lr, momentum = momentum, weight_decay = decay)
     else:
         lr, momentum, decay = 0.5*1e-3, 0.8, 1e-6
