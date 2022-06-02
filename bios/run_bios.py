@@ -2,6 +2,9 @@ import sys
 import os
 
 sys.path.append("../../")
+sys.path.append("../")
+sys.path.append("/../")
+
 from debias import get_debiasing_projection, get_rowspace_projection
 
 from classifier import CovMaximizer
@@ -21,7 +24,7 @@ from sklearn.cross_decomposition import PLSRegression
 from sklearn.decomposition import TruncatedSVD
 import torch
 from sklearn.linear_model import SGDClassifier
-from rlace import solve_fantope_relaxation
+from rlace import solve_adv_game
 
 from sklearn.svm import LinearSVC
 
@@ -46,11 +49,11 @@ def set_seeds(seed):
 
 
 def load_bios(group, finetune_mode, seed=None):
-    if finetune_mode not in ["regular", "adv", "adv_mlp"]:
-        X = np.load("../../{}_cls.npy".format(group))
+    if finetune_mode not in ["no-adv", "mlp-adv", "linear-adv"]:
+        X = np.load("bios_data/{}_cls.npy".format(group))
     else:
-        X = np.load("finetune/encodings/{}/{}_{}_cls.npy".format(finetune_mode, group, seed))
-    with open("../../{}.pickle".format(group), "rb") as f:
+        X = np.load("models/{}/{}_{}_cls.npy".format(finetune_mode, group, seed))
+    with open("bios_data/{}.pickle".format(group), "rb") as f:
         bios_data = pickle.load(f)
         Y = np.array([1 if d["g"] == "f" else 0 for d in bios_data])
         professions = np.array([d["p"] for d in bios_data])
@@ -132,7 +135,7 @@ if __name__ == "__main__":
     parser.add_argument('--run_id', type=int, default=-1, required=True)
     parser.add_argument('--do_inlp', type=int, default=1, required=True)
     parser.add_argument('--do_rlace', type=int, default=1, required=True)
-    parser.add_argument('--ranks', type=str, default="[1,100]", required=False)
+    parser.add_argument('--ranks', type=str, default="[1,50,100]", required=False)
     parser.add_argument('--finetune_mode', type=str, default="none", required=True)
 
     args = parser.parse_args()
@@ -182,21 +185,20 @@ if __name__ == "__main__":
         if not args.do_rlace == 1:
             exit()
 
-        for rank in ranks:
-            ws, advs, best_adv, best_score = solve_fantope_relaxation(X, y, X_dev, y_dev, d=rank, init_beta=None,
-                                                                      device=device, out_iters=50000, in_iters_adv=1,
-                                                                      in_iters_clf=1, batch_size=256, epsilon=0.001,
-                                                                      noise_std=0.0, lr=0.005, momentum=0.0,
-                                                                      weight_decay=0.1 * 1e-3, input_dropout=0.0,
-                                                                      project_freq=1,
-                                                                      evalaute_every=500, learn_proj=False)
+        optimizer_class = torch.optim.SGD
+        optimizer_params_P = {"lr": 0.005, "weight_decay": 1e-4, "momentum": 0.0}
+        optimizer_params_predictor = {"lr": 0.005, "weight_decay": 1e-4, "momentum": 0.9}
 
-            U, D = get_svd(best_adv)
-            U = U.T
-            W = U[-rank:]
-            P = np.eye(X.shape[1]) - W.T @ W
+        for rank in ranks:
+
+            output = solve_adv_game(X, y, X, y, rank=rank, device=DEVICE, out_iters=60000,
+                                        optimizer_class=optimizer_class, optimizer_params_P=optimizer_params_P,
+                                        optimizer_params_predictor=optimizer_params_predictor, epsilon=0.002,
+                                        batch_size=64)
+
+            P = output["P"]
             Ps_rlace.append(P)
-            accs_rlace.append(best_score)
+            accs_rlace.append(output["score"])
 
             with open("interim/{}/rlace/run={}/Ps_rlace.pickle".format(finetune_mode, random_run), "wb") as f:
                 pickle.dump((Ps_rlace, accs_rlace), f)
