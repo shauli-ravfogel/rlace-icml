@@ -178,7 +178,7 @@ def eval_dev(bert, W, texts_dev, y_dev, device, adv=None, y_dev_gender=None):
 N_ITERS = 70000
 pbar = tqdm.tqdm(range(N_ITERS), ascii=True)
 
-wandb.init(project="rlace/finetune-bios-{}".format(args.run_id))
+run = wandb.init(reinit=True, project="rlace-finetune-bios")
 
 for i in pbar:
     
@@ -228,3 +228,4 @@ for i in pbar:
         #print(i, train_loss, dev_loss, best_score)
         loss_vals = []
         
+run.finish()
