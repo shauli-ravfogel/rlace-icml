@@ -180,8 +180,7 @@ def eval_dev(bert, W, texts_dev, y_dev, device, adv=None, y_dev_gender=None):
 
 
 pbar = tqdm.tqdm(range(args.iters), ascii=True)
-args = argparse.Namespace()
-d = vars(args)
+d = args.__dict__
 run = wandb.init(reinit=True, project="rlace-finetune-bios", config=d)
 wandb.config.update({"lr": lr, "momentum": momentum, "decay": decay})
 
