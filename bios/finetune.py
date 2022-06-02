@@ -32,6 +32,10 @@ import numpy as np
 from transformers import BertModel, BertTokenizer
 import argparse
 import time
+import wandb
+
+
+
 
 def load_bios(group):
 
@@ -174,6 +178,7 @@ def eval_dev(bert, W, texts_dev, y_dev, device, adv=None, y_dev_gender=None):
 N_ITERS = 70000
 pbar = tqdm.tqdm(range(N_ITERS), ascii=True)
 
+wandb.init(project="rlace/finetune-bios-{}".format(args.run_id))
 
 for i in pbar:
     
@@ -214,7 +219,8 @@ for i in pbar:
             torch.save(bert.state_dict(), "{}/bert_{}.pt".format(path,args.run_id))
             if adv:
                 torch.save(adv_clf.state_dict(), "{}/adv_{}.pt".format(path, args.run_id))
-            
+
+            wandb.log({"train_loss": train_loss, "dev_loss": dev_loss, "best_score": best_score, "dev_acc": dev_acc, "adv_acc", adv_acc if adv else -1})
             pbar.set_description("Train loss: {:.3f}; Dev loss: {:.3f}; Best Dev loss: {:.3f}; Dev acc: {:.3f}; Dev adv-acc: {:.3f}".format(train_loss, dev_loss, best_score, dev_acc, adv_acc if adv else -1))
             pbar.refresh() # to show immediately the update
             time.sleep(0.01)
