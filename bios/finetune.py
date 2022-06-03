@@ -214,7 +214,7 @@ for i in pbar:
     
     loss_vals.append(loss.detach().cpu().numpy().item())
     
-    if i % 1000 == 0: #and i > 0:
+    if i % 2000 == 0: #and i > 0:
         return_dict = eval_dev(bert, W, txts_dev, y_dev_prof, device, adv=adv_clf if adv else None, y_dev_gender=y_dev_gender)
         dev_loss, dev_acc = return_dict["loss"], return_dict["acc"]
         if adv:
