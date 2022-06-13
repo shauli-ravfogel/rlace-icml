@@ -66,14 +66,13 @@ def encode(bert, texts):
     assert len(H_np) == len(texts)
     return H_np
 
-
 if __name__ == "__main__":
     random.seed(0)
     np.random.seed(0)
     
     parser = argparse.ArgumentParser(description="An argparse example")
     parser.add_argument('--device', type=int, default=-1, required=False)
-    parser.add_argument('--run_id', type=int, default=-1, required=True)
+    parser.add_argument('--run_id', type=int, default=-1, required=False)
     args = parser.parse_args()
     device = "cpu" if args.device == -1 else "cuda:{}".format(args.device)
     print(device)

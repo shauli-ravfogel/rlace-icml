@@ -109,59 +109,52 @@ if __name__ == "__main__":
     for random_run in range(5):
         os.makedirs("glove/plots/original/pca/run={}".format(random_run), exist_ok=True)
         os.makedirs("glove/plots/original/tsne/run={}".format(random_run), exist_ok=True)
-        os.makedirs("glove/plots/inlp/pca/run={}".format(random_run), exist_ok=True)
-        os.makedirs("glove/plots/inlp/tsne/run={}".format(random_run), exist_ok=True)
-        os.makedirs("glove/plots/rlace/pca/run={}".format(random_run), exist_ok=True)
-        os.makedirs("glove/plots/rlace/tsne/run={}".format(random_run), exist_ok=True)
+        # os.makedirs("glove/plots/inlp/pca/run={}".format(random_run), exist_ok=True)
+        # os.makedirs("glove/plots/inlp/tsne/run={}".format(random_run), exist_ok=True)
+        # os.makedirs("glove/plots/rlace/pca/run={}".format(random_run), exist_ok=True)
+        # os.makedirs("glove/plots/rlace/tsne/run={}".format(random_run), exist_ok=True)
         os.makedirs("glove/interim/rlace/run={}".format(random_run), exist_ok=True)
-        os.makedirs("glove/interim/inlp/run={}".format(random_run), exist_ok=True)
+        # os.makedirs("glove/interim/inlp/run={}".format(random_run), exist_ok=True)
 
         set_seeds(random_run)
 
         # run inlp
 
-        Ps_nullsapce_inlp, ws_inlp_normalized, accs_inlp = run_inlp(X, y, X_dev, y_dev, num_iters=21)
+        # Ps_nullsapce_inlp, ws_inlp_normalized, accs_inlp = run_inlp(X, y, X_dev, y_dev, num_iters=21)
 
-        with open("glove/interim/inlp/run={}/Ps_inlp.pickle".format(random_run), "wb") as f:
-            pickle.dump((Ps_nullsapce_inlp, accs_inlp), f)
-
-        plot_pca(X_dev, y_dev, "glove/plots/original/pca/run={}".format(random_run), "original", method="pca")
-        plot_pca(X_dev, y_dev, "glove/plots/original/tsne/run={}".format(random_run), "original", method="tsne")
-
-        for i, P in enumerate(Ps_nullsapce_inlp):
-            plot_pca(X_dev @ P, y_dev, "glove/plots/inlp/pca/run={}".format(random_run), "Projected, Rank={}".format(i + 1),
-                     method="pca")
-            plot_pca(X_dev @ P, y_dev, "glove/plots/inlp/tsne/run={}".format(random_run), "Projected, Rank={}".format(i + 1),
-                     method="tsne")
+        # with open("glove/interim/inlp/run={}/Ps_inlp.pickle".format(random_run), "wb") as f:
+        # #     pickle.dump((Ps_nullsapce_inlp, accs_inlp), f)
+        #
+        # plot_pca(X_dev, y_dev, "glove/plots/original/pca/run={}".format(random_run), "original", method="pca")
+        # plot_pca(X_dev, y_dev, "glove/plots/original/tsne/run={}".format(random_run), "original", method="tsne")
+        #
+        # # for i, P in enumerate(Ps_nullsapce_inlp):
+        #     plot_pca(X_dev @ P, y_dev, "glove/plots/inlp/pca/run={}".format(random_run), "Projected, Rank={}".format(i + 1),
+        #              method="pca")
+        #     plot_pca(X_dev @ P, y_dev, "glove/plots/inlp/tsne/run={}".format(random_run), "Projected, Rank={}".format(i + 1),
+        #              method="tsne")
 
         # run adversarial game
 
         ranks = [1, 2, 4, 8, 12, 16, 20]
-        DEVICE = "cpu"
+        DEVICE = "cuda:1"
 
-        Ps_rlace, accs_rlace = [], [1.0]
+        Ps_rlace, accs_rlace = {}, {}
         optimizer_class = torch.optim.SGD
-        optimizer_params_P = {"lr": 0.001, "weight_decay": 1e-5, "momentum": 0.9}
-        optimizer_params_predictor = {"lr": 0.001, "weight_decay": 1e-5, "momentum": 0.9}
+        optimizer_params_P = {"lr": 0.005, "weight_decay": 1e-5, "momentum": 0.0}
+        optimizer_params_predictor = {"lr": 0.005, "weight_decay": 1e-5, "momentum": 0.0}
         for rank in ranks:
-            output = solve_adv_game(X, y, X, y, rank=rank, device=DEVICE, out_iters=60000,
+            output = solve_adv_game(X, y, X, y, rank=rank, device=DEVICE, out_iters=50000,
                                     optimizer_class=optimizer_class, optimizer_params_P=optimizer_params_P,
                                     optimizer_params_predictor=optimizer_params_predictor, epsilon=0.002,
-                                    batch_size=64)
-        P = output["P"]
-        Ps_rlace.append(P)
-        accs_rlace.append(output["score"])
+                                    batch_size=128)
+            P = output["P"]
+            Ps_rlace[rank] = P
+            accs_rlace[rank] = output["score"]
+            with open("glove/interim/rlace/run={}/Ps_rlace.pickle".format(random_run), "wb") as f:
+                pickle.dump((Ps_rlace, accs_rlace), f)
+        # plot_pca(X_dev @ P, y_dev, "glove/plots/rlace/pca/run={}".format(random_run), "Projected, Rank={}".format(rank),
+        #          method="pca")
+        # plot_pca(X_dev @ P, y_dev, "glove/plots/rlace/tsne/run={}".format(random_run), "Projected, Rank={}".format(rank),
+        #          method="tsne")
 
-        plot_pca(X_dev @ P, y_dev, "glove/plots/rlace/pca/run={}".format(random_run), "Projected, Rank={}".format(rank),
-                 method="pca")
-        plot_pca(X_dev @ P, y_dev, "glove/plots/rlace/tsne/run={}".format(random_run), "Projected, Rank={}".format(rank),
-                 method="tsne")
-
-    rlace_projs[random_run] = {"Ps": Ps_rlace, "accs": accs_rlace, "ranks": ranks}
-    inlp_projs[random_run] = {"Ps": Ps_nullsapce_inlp, "accs": accs_inlp}
-
-    with open("glove/interim/rlace/projs.pickle", "wb") as f:
-        pickle.dump(rlace_projs, f)
-
-    with open("glove/interim/inlp/projs.pickle", "wb") as f:
-        pickle.dump(inlp_projs, f)

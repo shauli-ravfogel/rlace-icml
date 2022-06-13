@@ -18,5 +18,5 @@ sleep 10
 python3 finetune.py --run_id 2 --device 0 --adv 1 --mlp_adv 1 --opt sgd &
 python3 finetune.py --run_id 3 --device 1 --adv 1 --mlp_adv 1 --opt sgd &
 python3 finetune.py --run_id 4 --device 2 --adv 1 --mlp_adv 1 --opt sgd
-sleep 10
+sleep 100
 python3 encode.py --device 0

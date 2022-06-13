@@ -70,11 +70,11 @@ def load_bios(group, finetune_mode, seed=None):
 def run_inlp(X, y, X_dev, y_dev, num_iters=25):
     clf = SGDClassifier
     LOSS = "log"
-    ALPHA = 1e-5
+    ALPHA = 1e-4
     TOL = 1e-4
-    ITER_NO_CHANGE = 25
-    params = {"loss": LOSS, "fit_intercept": True, "max_iter": 3000000, "tol": TOL, "n_iter_no_change": ITER_NO_CHANGE,
-              "alpha": ALPHA, "n_jobs": 64}
+    ITER_NO_CHANGE = 20
+    params = {"loss": LOSS, "fit_intercept": True, "max_iter": 2000000, "tol": TOL, "n_iter_no_change": ITER_NO_CHANGE,
+              "alpha": ALPHA, "n_jobs": 32}
 
     input_dim = X_dev.shape[1]
 
@@ -135,7 +135,7 @@ if __name__ == "__main__":
     parser.add_argument('--run_id', type=int, default=-1, required=True)
     parser.add_argument('--do_inlp', type=int, default=1, required=True)
     parser.add_argument('--do_rlace', type=int, default=1, required=True)
-    parser.add_argument('--ranks', type=str, default="[1,50,100]", required=False)
+    parser.add_argument('--ranks', type=str, default="[1,4,8,16,32,50,64,100]", required=False)
     parser.add_argument('--finetune_mode', type=str, default="none", required=True)
 
     args = parser.parse_args()
@@ -144,10 +144,21 @@ if __name__ == "__main__":
     rlace_projs = defaultdict(dict)
     inlp_projs = defaultdict(dict)
     device = "cpu" if args.device == -1 else "cuda:{}".format(args.device)
+    DEVICE=device
     finetune_mode = args.finetune_mode
 
     X, y, txts, professions, bios_data = load_bios("train", finetune_mode, args.run_id)
     X, y = X[:100000], y[:100000]
+
+    if not os.path.exists("pca"):
+        os.makedirs("pca")
+    pca = PCA(random_state=args.run_id, n_components=300)
+    pca.fit(X)
+    with open("pca/pca_{}_{}.pickle".format(finetune_mode, args.run_id), "wb") as f:
+        pickle.dump(pca, f)
+    X = pca.transform(X)
+
+    X_dev = pca.transform(X_dev)
     X_dev, y_dev, txts_dev, professions_dev, bios_data_dev = load_bios("dev", finetune_mode, args.run_id)
 
     for random_run in [args.run_id]:
@@ -181,24 +192,24 @@ if __name__ == "__main__":
 
         # run adversarial game
 
-        Ps_rlace, accs_rlace = [], [1.0]
+        Ps_rlace, accs_rlace = {}, {}
         if not args.do_rlace == 1:
             exit()
 
         optimizer_class = torch.optim.SGD
         optimizer_params_P = {"lr": 0.005, "weight_decay": 1e-4, "momentum": 0.0}
-        optimizer_params_predictor = {"lr": 0.005, "weight_decay": 1e-4, "momentum": 0.9}
+        optimizer_params_predictor = {"lr": 0.005, "weight_decay": 1e-5, "momentum": 0.9}
 
         for rank in ranks:
 
             output = solve_adv_game(X, y, X, y, rank=rank, device=DEVICE, out_iters=60000,
                                         optimizer_class=optimizer_class, optimizer_params_P=optimizer_params_P,
                                         optimizer_params_predictor=optimizer_params_predictor, epsilon=0.002,
-                                        batch_size=64)
+                                        batch_size=256)
 
             P = output["P"]
-            Ps_rlace.append(P)
-            accs_rlace.append(output["score"])
+            Ps_rlace[rank] = P
+            accs_rlace[rank] = output["score"]
 
             with open("interim/{}/rlace/run={}/Ps_rlace.pickle".format(finetune_mode, random_run), "wb") as f:
                 pickle.dump((Ps_rlace, accs_rlace), f)
