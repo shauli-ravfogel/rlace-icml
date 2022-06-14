@@ -109,21 +109,21 @@ if __name__ == "__main__":
     for random_run in range(5):
         os.makedirs("glove/plots/original/pca/run={}".format(random_run), exist_ok=True)
         os.makedirs("glove/plots/original/tsne/run={}".format(random_run), exist_ok=True)
-        # os.makedirs("glove/plots/inlp/pca/run={}".format(random_run), exist_ok=True)
-        # os.makedirs("glove/plots/inlp/tsne/run={}".format(random_run), exist_ok=True)
-        # os.makedirs("glove/plots/rlace/pca/run={}".format(random_run), exist_ok=True)
-        # os.makedirs("glove/plots/rlace/tsne/run={}".format(random_run), exist_ok=True)
+        os.makedirs("glove/plots/inlp/pca/run={}".format(random_run), exist_ok=True)
+        os.makedirs("glove/plots/inlp/tsne/run={}".format(random_run), exist_ok=True)
+        os.makedirs("glove/plots/rlace/pca/run={}".format(random_run), exist_ok=True)
+        os.makedirs("glove/plots/rlace/tsne/run={}".format(random_run), exist_ok=True)
         os.makedirs("glove/interim/rlace/run={}".format(random_run), exist_ok=True)
-        # os.makedirs("glove/interim/inlp/run={}".format(random_run), exist_ok=True)
+        os.makedirs("glove/interim/inlp/run={}".format(random_run), exist_ok=True)
 
         set_seeds(random_run)
 
         # run inlp
 
-        # Ps_nullsapce_inlp, ws_inlp_normalized, accs_inlp = run_inlp(X, y, X_dev, y_dev, num_iters=21)
+        Ps_nullsapce_inlp, ws_inlp_normalized, accs_inlp = run_inlp(X, y, X_dev, y_dev, num_iters=21)
 
-        # with open("glove/interim/inlp/run={}/Ps_inlp.pickle".format(random_run), "wb") as f:
-        # #     pickle.dump((Ps_nullsapce_inlp, accs_inlp), f)
+        with open("glove/interim/inlp/run={}/Ps_inlp.pickle".format(random_run), "wb") as f:
+             pickle.dump((Ps_nullsapce_inlp, accs_inlp), f)
         #
         # plot_pca(X_dev, y_dev, "glove/plots/original/pca/run={}".format(random_run), "original", method="pca")
         # plot_pca(X_dev, y_dev, "glove/plots/original/tsne/run={}".format(random_run), "original", method="tsne")
