@@ -199,8 +199,8 @@ optimizer_params_P={"lr": 0.005, "weight_decay": 1e-4}, optimizer_params_predict
             pbar.refresh()  # to show immediately the update
             time.sleep(0.01)
 
-        #if i > 1 and np.abs(best_score - maj) < epsilon:
-        if i > 1 and np.abs(best_loss - label_entropy) < epsilon:
+        if i > 1 and np.abs(best_score - maj) < epsilon:
+        #if i > 1 and np.abs(best_loss - label_entropy) < epsilon:
                     break
     output = prepare_output(best_P,rank,best_score)
     return output
