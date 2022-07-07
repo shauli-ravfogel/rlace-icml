@@ -50,3 +50,21 @@ output = solve_adv_game(X_train, y_train, X_dev, y_dev, rank=rank, device="cpu",
 3. `P`: a proper orthogonal matrix that neutralizes a rank-`k` subspace. 
 
 The ``clean" vectors are given by `X.dot(output["P"])`.
+
+
+# Experiments
+
+The directories `glove` and `bios` contain the experiments on neutralization gender information form GLoVe embeddings and from BERT representations of the Bias in Bios dataset, respectively.
+
+To run:
+
+```
+python3 glove/run_glove.py 
+sh bios/finetune.sh
+sh bios/run_rlace.sh
+```
+
+And then run the analysis notebooks to replicate the experiments reported in the paper.
+
+## Data and Models
+Will be released soon. 
