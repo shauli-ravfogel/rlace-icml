@@ -66,5 +66,5 @@ sh bios/run_rlace.sh
 
 And then run the analysis notebooks to replicate the experiments reported in the paper.
 
-## Data and Models
-The dataset used in the experiments, as well as the trained models and projection matrices, are available [here](https://nlp.biu.ac.il/~ravfogs/rlace/).
+### Data and Models
+The datasets used in the experiments, as well as the trained models and projection matrices, are available [here](https://nlp.biu.ac.il/~ravfogs/rlace/).
