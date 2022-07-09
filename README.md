@@ -54,7 +54,7 @@ The ``clean" vectors are given by `X.dot(output["P"])`.
 
 # Experiments
 
-The directories `glove` and `bios` contain the experiments on neutralization gender information form GLoVe embeddings and from BERT representations of the Bias in Bios dataset, respectively.
+The directories `glove` and `bios` contain the experiments on neutralization gender information form GloVe embeddings and from BERT representations of the Bias in Bios dataset, respectively.
 
 To run:
 
