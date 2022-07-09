@@ -33,7 +33,7 @@ optimizer_params_predictor = {"lr": 0.003,"weight_decay": 1e-4}
 epsilon = 0.001 # stop 0.1% from majority acc
 batch_size = 256
 
-output = solve_adv_game(X_train, y_train, X_dev, y_dev, rank=rank, device="cpu", out_iters=num_iters, optimizer_class=optimizer_class, optimizer_params_P =optimizer_params_P, optimizer_params_predictor=optimizer_params_predictor, epsilon=epsilon,batch_size=batch_size)
+output = solve_adv_game(X_train, y_train, X_dev, y_dev, rank=rank, device="cpu", out_iters=num_iters, optimizer_class=optimizer_class, \\ optimizer_params_P =optimizer_params_P, optimizer_params_predictor=optimizer_params_predictor, epsilon=epsilon,batch_size=batch_size)
 ```
 
 **Optimization**: Even though we run a concave-convex minimax game, which is generallly "well-behaved", optimziation with alternate SGD is still not completely straightforward, and may require some tuning of the optimizers. Accuracy is also not expected to monotonously decrease in optimization; we return the projection matrix which performed best along the entire game. In all experiments on binary classification problems, we identified a projection matrix that neutralizes a rank-1 subspace and decreases classification accuracy to near-random (50%).
