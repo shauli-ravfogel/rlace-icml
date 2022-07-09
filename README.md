@@ -1,4 +1,4 @@
-This repository contains the code for the experiments included in the paper [Linear Adversarial Concept Erasure](https://arxiv.org/abs/2201.12091), accepted as a long paper in ICML 2022.
+This repository contains the code for the experiments included in the paper [Linear Adversarial Concept Erasure](https://arxiv.org/abs/2201.12091), accepted in ICML 2022.
 In the paper, we formulate the problem of identifying and neutralizing *concept subspaces* -- linear subspaces within the representation space that capture a given concept, such as gender.
 
 # Algorithm
