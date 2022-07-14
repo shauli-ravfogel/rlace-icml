@@ -1,6 +1,19 @@
 This repository contains the code for the experiments included in the paper [Linear Adversarial Concept Erasure](https://arxiv.org/abs/2201.12091), accepted in ICML 2022.
 In the paper, we formulate the problem of identifying and neutralizing *concept subspaces* -- linear subspaces within the representation space that capture a given concept, such as gender.
 
+To cite:
+
+```
+@inproceedings{ravfogel2022linear,
+  title={Linear Adversarial Concept Erasure},
+  author={Ravfogel, Shauli and Twiton, Michael and Goldberg, Yoav and Cotterell, Ryan D},
+  booktitle={International Conference on Machine Learning},
+  pages={18400--18421},
+  year={2022},
+  organization={PMLR}
+}
+```
+
 # Algorithm
 
 the file `rlace.py` contains an implementation of Relaxed Linear Adversarial Concept Erasure (R-LACE). 
